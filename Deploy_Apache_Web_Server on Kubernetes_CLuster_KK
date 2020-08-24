@@ -1,0 +1,59 @@
+There is an application that needs to be deployed on Kubernetes cluster under Apache web server. 
+The Nautilus application development team has asked the DevOps team to deploy it. 
+We need to develop a template as per requirements mentioned below:
+1.	Create a namespace named as httpd-namespace-datacenter.
+2.	Create a service named as httpd-service-datacenter, targetPort 80 to nodePort 30004.
+3.	Create a deployment named as httpd-deployment-datacenter under the same namespace as mentioned above. Its service should also be same as the one mentioned above. Use image httpd with latest tag only and remember to mention tag i.e httpd:latest, and container name should be httpd-container-datacenter. And make sure replicas counts are 4.
+4.	Set labels app to httpd_app_datacenter.
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+
+1. Create Namespace	
+
+kubectl create namespace httpd-namespace-datacenter
+
+2. Create Service  
+kubectl create -f httpd-service-datacente.yaml --namespace=httpd-namespace-datacenter
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd-service-datacenter
+  labels:
+    app: httpd_app_datacenter
+spec:
+  type: LoadBalancer
+  ports:
+    - nodePort: 30004
+      port: 80
+      targetPort: 80
+  selector:
+    app: httpd_app_datacenter
+...
+
+3. Create Deployment
+
+kubectl create -f httpd-deployment-datacenter.yaml --namespace=httpd-namespace-datacenter
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-deployment-datacenter
+spec:
+  selector:
+    matchLabels:
+      app: httpd_app_datacenter
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: httpd_app_datacenter
+    spec:
+      containers:
+      - name: httpd-container-datacenter
+        image: httpd:latest
+        ports:
+        - containerPort: 80
+ ...

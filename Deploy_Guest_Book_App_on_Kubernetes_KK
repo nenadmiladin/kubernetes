@@ -40,7 +40,7 @@ spec:
   selector:    
     matchLabels:
       app: redis
-	  tier: backend
+      tier: backend
   template:
     metadata:
       labels:

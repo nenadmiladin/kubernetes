@@ -13,8 +13,8 @@ kubectl create configmap time-config --from-literal=TIME_FREQ=7 --namespace=data
 
 sudo chown $(id -u):$(id -g) $HOME/.kube/
 
-#kubectl config set-context $(kubectl config current-context) --namespace=datacenter
-#kubectl exec --stdin --tty time-check -- /bin/sh
+# kubectl config set-context $(kubectl config current-context) --namespace=datacenter
+# kubectl exec --stdin --tty time-check -- /bin/sh
 
 ---
 apiVersion: v1

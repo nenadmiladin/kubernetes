@@ -1,0 +1,65 @@
+There are number of parameters that are used by applications which we need to define as environment variables so that we can use them as per our need within different configs. 
+Below is a scenario which needs to be configured on Kubernetes cluster. Please find below more details about he same.
+1.	Create a namespace named as fieldref-namespace.
+2.	Create a pod named envars-fieldref under the namespace fieldref-namespace.
+3.	Configure spec as the container name should be fieldref-container, use image redis preferable latest tag, use command 'sh', '-c' and args should be
+'while true; do echo -en '/n'; printenv NODE_NAME POD_NAME POD_NAMESPACE; printenv POD_IP POD_SERVICE_ACCOUNT; sleep 10; done;'
+(Note: please take care of indentations)
+3.	Define five environment variables as mentioned below:
+a.) First env should be named as NODE_NAME, set valueFrom fieldref and fieldPath should be spec.nodeName.
+b.) Second env should named as POD_NAME, set valueFrom fieldref and fieldPath should be metadata.name.
+c.) Third env should named as POD_NAMESPACE, set valueFrom fieldref and fieldPath should be metadata.namespace.
+d.) Forth env should named as POD_IP, set valueFrom fieldref and fieldPath should be status.podIP.
+e.) Fifth env should named as POD_SERVICE_ACCOUNT, set valueFrom fieldref and fieldPath shoulbe be spec.serviceAccountName.
+4.	Set restart policy to Never.
+5.	To check the output, exec the pod and use printenv command.
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fieldref-namespace
+spec:
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envars-fieldref
+  namespace: fieldref-namespace
+spec:
+  containers:
+  - image: redis:latest
+    name: fieldref-container
+    command: [ "sh", "-c"]
+    args:
+    - while true; do
+      echo -en '\n';
+      printenv NODE_NAME POD_NAME POD_NAMESPACE;
+      printenv POD_IP POD_SERVICE_ACCOUNT;
+      sleep 10;
+      done;
+    env:
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      - name: POD_NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
+      - name: POD_SERVICE_ACCOUNT
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.serviceAccountName
+  restartPolicy: Never

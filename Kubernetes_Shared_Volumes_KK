@@ -30,16 +30,16 @@ spec:
     volumeMounts:
     - mountPath: /tmp/media
       name: volume-share    
-	command: ["/bin/bash", "-c", "sleep 10000"]
+    command: ["/bin/bash", "-c", "sleep 10000"]
   - name: volume-container-devops-2
     image: centos:latest
     volumeMounts:
     - mountPath: /tmp/apps      
-	  name: volume-share
+      name: volume-share
     command: ["/bin/bash", "-c", "sleep 10000"]
   volumes:
-    - name: volume-share
-      emptyDir: {}
+  - name: volume-share
+    emptyDir: {}
 ...
 
 
